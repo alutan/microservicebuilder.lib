@@ -54,11 +54,11 @@ def call(body) {
   def kubectl = (config.kubectlImage == null) ? 'ibmcom/k8s-kubectl:v1.8.3' : config.kubectlImage
   def helm = (config.helmImage == null) ? 'ibmcom/k8s-helm:v2.6.0' : config.helmImage
   def mvnCommands = (config.mvnCommands == null) ? 'clean package' : config.mvnCommands
-  def registry = System.getenv("REGISTRY").trim()
+  def registry = (System.getenv("REGISTRY") ?: "").trim()
   if (registry && !registry.endsWith('/')) registry = "${registry}/"
-  def registrySecret = System.getenv("REGISTRY_SECRET").trim()
-  def build = (config.build ?: System.getenv ("BUILD")).toBoolean()
-  def deploy = (config.deploy ?: System.getenv ("DEPLOY")).toBoolean()
+  def registrySecret = (System.getenv("REGISTRY_SECRET") ?: "").trim()
+  def build = (config.build ?: (System.getenv ("BUILD") ?: "true")).toBoolean()
+  def deploy = (config.deploy ?: (System.getenv ("DEPLOY") ?: "true")).toBoolean()
   def namespace = config.namespace ?: (System.getenv("NAMESPACE") ?: "").trim()
 
   // these options were all added later. Helm chart may not have the associated properties set.
@@ -72,7 +72,7 @@ def call(body) {
   def libertyLicenseJarBaseUrl = (System.getenv("LIBERTY_LICENSE_JAR_BASE_URL") ?: "").trim()
   def libertyLicenseJarName = config.libertyLicenseJarName ?: (System.getenv("LIBERTY_LICENSE_JAR_NAME") ?: "").trim()
   def alwaysPullImage = (System.getenv("ALWAYS_PULL_IMAGE") == null) ? true : System.getenv("ALWAYS_PULL_IMAGE").toBoolean()
-  def mavenSettingsConfigMap = System.getenv("MAVEN_SETTINGS_CONFIG_MAP")?.trim() 
+  def mavenSettingsConfigMap = (System.getenv("MAVEN_SETTINGS_CONFIG_MAP") ?: "").trim() 
 
   print "microserviceBuilderPipeline: registry=${registry} registrySecret=${registrySecret} build=${build} \
   deploy=${deploy} deployBranch=${deployBranch} test=${test} debug=${debug} namespace=${namespace} \
